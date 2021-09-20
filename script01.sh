@@ -37,6 +37,12 @@ done
 
 echo "$separator" >> ./SecurityChecks/$date/DailySummary_"$date"
 echo "#SaaS Name\tAlias:\tSum(Passed/Failed/Stale/Can't Run)" >> ./SecurityChecks/$date/DailySummary_"$date"
+sum=$(jq -r ".data[].integration_id" tmp01$$.json | wc -l)
+passed=$(jq -r ".data[] | select(.status==\"Passed\").integration_id" tmp01$$.json | wc -l)
+failed=$(jq -r ".data[] | select(.status==\"Failed\").integration_id" tmp01$$.json | wc -l)
+stale=$(jq -r ".data[] | select(.status==\"Stale\").integration_id" tmp01$$.json | wc -l)
+cantrun=$(jq -r ".data[] | select(.status==\"Can't Run\").integration_id" tmp01$$.json | wc -l)
+echo "Total\t- :\t$sum ($passed/$failed/$stale/$cantrun)" >> ./SecurityChecks/$date/DailySummary_"$date"
 request_uri="https://api.adaptive-shield.com/api/v1/accounts/$accountid/integrations"
 curl -s --location -g --request GET $request_uri --header "Authorization: Token $apikey" --data-raw '' | jq -r >> tmp02$$.json
 jq -r ".data[] | select(.enabled==true).id" tmp02$$.json |\
@@ -49,7 +55,7 @@ do
   failed=$(jq -r ".data[] | select(.integration_id==\"$LINE\" and .status==\"Failed\").integration_id" tmp01$$.json | wc -l)
   stale=$(jq -r ".data[] | select(.integration_id==\"$LINE\" and .status==\"Stale\").integration_id" tmp01$$.json | wc -l)
   cantrun=$(jq -r ".data[] | select(.integration_id==\"$LINE\" and .status==\"Can't Run\").integration_id" tmp01$$.json | wc -l)
-  echo "$saas_name\t$alias:\t$sum($passed/$failed/$stale/$cantrun)" >> ./SecurityChecks/$date/DailySummary_"$date"
+  echo "$saas_name\t$alias:\t$sum ($passed/$failed/$stale/$cantrun)" >> ./SecurityChecks/$date/DailySummary_"$date"
 done
 
 rm tmp0{1..2}$$.json
