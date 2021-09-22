@@ -36,7 +36,7 @@ do
 done
 
 echo "$separator" >> ./SecurityChecks/$date/DailySummary_"$date"
-echo "#SaaS Name\tAlias:\tSum(Passed/Failed/Stale/Can't Run)" >> ./SecurityChecks/$date/DailySummary_"$date"
+echo "#SaaS Name\tAlias:\tSum (Passed/Failed/Stale/Can't Run)" >> ./SecurityChecks/$date/DailySummary_"$date"
 sum=$(jq -r ".data[].integration_id" tmp01$$.json | wc -l)
 passed=$(jq -r ".data[] | select(.status==\"Passed\").integration_id" tmp01$$.json | wc -l)
 failed=$(jq -r ".data[] | select(.status==\"Failed\").integration_id" tmp01$$.json | wc -l)
